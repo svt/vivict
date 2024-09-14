@@ -119,7 +119,7 @@ class VideoPlayer extends Component {
         if (this.state.dash) {
             this.state.dash.setQualityFor('video', variant);
         } else if (this.state.hls) {
-            this.state.hls.currentLevel = this.state.hls.levels.length - variant - 1;
+            this.state.hls.currentLevel = Math.max(0, this.state.hls.levels.length - variant - 1);
         }
     }
 
@@ -160,7 +160,7 @@ class VideoPlayer extends Component {
         }
         hls.loadSource(url);
         hls.attachMedia(this.videoElement);
-        hls.currentLevel = hls.levels.length - variant - 1;
+        hls.currentLevel = Math.max(0, hls.levels.length - variant - 1);
     }
 
     currentTime() {
