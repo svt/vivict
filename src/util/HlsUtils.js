@@ -18,12 +18,12 @@ export async function parseHlsManifest(url) {
             bandwidth: playlist.attributes.BANDWIDTH,
             ...playlist.attributes.RESOLUTION,
         };
-    }).sort((a, b) => a.bandwidth - b.bandwidth);
+    }).sort((a, b) => b.bandwidth - a.bandwidth);
 
     return {
         mainUrl: url,
         variants,
-        selectedVariant: variants.length - 1,
+        selectedVariant: 0,
     };
 }
 
