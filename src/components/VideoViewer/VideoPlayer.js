@@ -118,7 +118,7 @@ class VideoPlayer extends Component {
         console.log(`setVariant: ${variant}`);
         if (this.state.dash) {
             this.state.dash.setQualityFor('video', variant);
-        } else if (this.state.hls) {
+        } else if (this.state.hls && this.state.hls.levels) {
             this.state.hls.currentLevel = Math.max(0, this.state.hls.levels.length - variant - 1);
         }
     }
