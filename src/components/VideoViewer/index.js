@@ -13,7 +13,6 @@ import {openFullscreen, isFullscreen, closeFullscreen} from "../../util/Fullscre
 import {copyToClipboard} from "../../util/CopyClipboard";
 import {FiPlay} from 'react-icons/fi';
 import cx from 'classnames';
-import {isHlsPlaylist} from "../../util/HlsUtils";
 import {isDashOrHls, sourceType} from "../../util/SourceUtils";
 
 const DEFAULT_SOURCES = {

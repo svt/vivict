@@ -3,7 +3,7 @@ import { FiFile, FiGlobe } from "react-icons/fi";
 import cx from 'classnames';
 import './index.css';
 import { isHlsPlaylist, parseHlsManifest } from '../../util/HlsUtils';
-import { mp4Info } from '../../util/Mp4Info';
+import { getMediaInfo } from '../../util/MediaInfo';
 import { isDashManifest, parseDashManifest } from "../../util/DashUtils";
 import { setupDragAndDrop } from '../../util/DragNDrop';
 
@@ -38,34 +38,25 @@ class SourceSelector extends Component {
         this.setState({ metadata })
     }
 
-    async loadMp4Metadata(url) {
-        try {
-            const mp4Metadata = await mp4Info(url);
 
-            const videoTrack = mp4Metadata.videoTracks[0];
-            const metadata = {
-                variants: [
-                    {
-                        bitrate: videoTrack.bitrate,
-                        width: videoTrack.video.width,
-                        height: videoTrack.video.height
-                    }
-                ]
-            };
-            this.setState({ metadata })
-        } catch (e) {
-            console.log(`Failed to get mp4 info: ${e}`);
-            const metadata = {
-                variants: [
-                    {
-                        bitrate: 0,
-                        width: 0,
-                        height: 0
-                    }
-                ]
-            };
-            this.setState({ metadata });
-        }
+    async loadMediaInfoMetadata(source) {
+        const reportProgressViaSourceName = newName => {
+          const source = Object.assign({}, this.state.source, {name: newName});
+          this.setState({source});
+        };
+
+        const mediaInfoMetadata = await getMediaInfo(source, reportProgressViaSourceName);
+        const videoTrack = mediaInfoMetadata.media.track.find(t => t['@type'] === 'Video');
+        const metadata = {
+            variants: [
+                {
+                    bitrate: videoTrack.BitRate,
+                    width: videoTrack.Width,
+                    height: videoTrack.Height
+                }
+            ]
+        };
+        this.setState({ metadata })
     }
 
     componentDidMount() {
@@ -117,6 +108,7 @@ class SourceSelector extends Component {
                 type: 'file',
                 name: file.name,
                 url: window.URL.createObjectURL(file),
+                file,
             });
         }
     }
@@ -153,6 +145,7 @@ class SourceSelector extends Component {
             this.changeSource({
                 type: 'file',
                 name: file.name,
+                file,
                 url: window.URL.createObjectURL(file),
             });
         }
@@ -177,7 +170,7 @@ class SourceSelector extends Component {
         } else if (source.type === 'dash') {
             await this.loadDashMetadata(source.url);
         } else {
-            await this.loadMp4Metadata(source.url);
+            await this.loadMediaInfoMetadata(source);
         }
     }
 
@@ -264,7 +257,7 @@ class SourceSelector extends Component {
 
 
                 <div className="drop-area" ref={(ref) => this.setDropAreaRef(ref)}></div>
-                
+
             </div>
         )
     }

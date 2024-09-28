@@ -105,8 +105,14 @@ class VideoPlayer extends Component {
                 },
                 { once: true });
             if (isHlsPlaylist(url)) {
-                this.loadHls(url, variant)
-            } else if (isDashManifest(url)) {
+                this.loadHls(url, variant); 
+                return;
+            } else if (this.state.hls) {
+                this.state.hls.detachMedia();
+                this.setState({hls: null});
+            }
+
+            if (isDashManifest(url)) {
                 this.loadDash(url, variant);
             } else {
                 this.videoElement.src = url;
@@ -124,10 +130,6 @@ class VideoPlayer extends Component {
     }
 
     loadDash(url, variant) {
-        if (this.state.hls) {
-            this.state.hls.detachMedia();
-            this.setState({hls: null});
-        }
         let dash = this.state.dash;
         this.videoElement.addEventListener('canplay',
             () => {
