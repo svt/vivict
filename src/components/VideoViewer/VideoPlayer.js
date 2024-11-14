@@ -160,7 +160,13 @@ class VideoPlayer extends Component {
         }
         hls.loadSource(url);
         hls.attachMedia(this.videoElement);
-        hls.currentLevel = Math.max(0, hls.levels.length - variant - 1);
+        hls.once(Hls.Events.MANIFEST_LOADED, (_event, data) => {
+            if(!data.levels.length) {
+                console.error('No levels found in HLS manifest');
+                return;
+            }
+            hls.currentLevel = Math.max(0, data.levels.length - variant - 1);
+        });
     }
 
     currentTime() {
