@@ -118,8 +118,8 @@ class VideoPlayer extends Component {
         console.log(`setVariant: ${variant}`);
         if (this.state.dash) {
             this.state.dash.setQualityFor('video', variant);
-        } else if (this.state.hls) {
-            this.state.hls.currentLevel = variant;
+        } else if (this.state.hls && this.state.hls.levels) {
+            this.state.hls.currentLevel = Math.max(0, this.state.hls.levels.length - variant - 1);
         }
     }
 
@@ -160,7 +160,13 @@ class VideoPlayer extends Component {
         }
         hls.loadSource(url);
         hls.attachMedia(this.videoElement);
-        hls.currentLevel = variant;
+        hls.once(Hls.Events.MANIFEST_LOADED, (_event, data) => {
+            if(!data.levels.length) {
+                console.error('No levels found in HLS manifest');
+                return;
+            }
+            hls.currentLevel = Math.max(0, data.levels.length - variant - 1);
+        });
     }
 
     currentTime() {

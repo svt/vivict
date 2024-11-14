@@ -25,8 +25,8 @@ const DEFAULT_SOURCES = {
 
 const urlParams = new URLSearchParams(window.location.search);
 const DEFAULT_SOURCE = DEFAULT_SOURCES[urlParams.get('defaultSource') ? urlParams.get('defaultSource') : 'hls'];
-const leftVideoUrl = urlParams.get('leftVideoUrl') || DEFAULT_SOURCE;
-const rightVideoUrl = urlParams.get('rightVideoUrl') || leftVideoUrl;
+const leftVideoUrl = window.leftVideoUrl || urlParams.get('leftVideoUrl') || DEFAULT_SOURCE;
+const rightVideoUrl = window.rightVideoUrl || urlParams.get('rightVideoUrl') || leftVideoUrl;
 const leftVideoVariant = Number(urlParams.get('leftVideoVariant')) || 0;
 const rightVideoVariant = Number(urlParams.get('rightVideoVariant')) || 0;
 const startPosition = Number(urlParams.get('position')) || 0;
@@ -355,11 +355,11 @@ class VideoViewer extends Component {
                                      onDurationSet={(duration) => this.onDurationSet(duration)}
                         />
                         <div className={cx("big-play-button", {
-                            "hidden": this.state.playing || this.state.position !== 0
+                            "hidden": this.state.playing || this.state.position > 0.1
                         })}
                              onClick={() => this.play()}
                         >
-                            <FiPlay size="32px"/>
+                            <FiPlay size={32} fill="#f00" viewBox="-2 0 24 24" />
                         </div>
                     </SplitView>
 
